@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useReducer, useEffect } from 'react';
+import * as taskService from '../services/taskService';
 
 const TaskContext = createContext();
 
@@ -45,37 +46,45 @@ export const TaskProvider = ({ children }) => {
   const loadTasks = async () => {
     try {
       dispatch({ type: 'SET_LOADING', payload: true });
+      const tasks = await taskService.getTasks();
       dispatch({ type: 'SET_TASKS', payload: tasks });
     } catch (error) {
       dispatch({ type: 'SET_ERROR', payload: error.message });
       // Fallback to localStorage
+      const localTasks = taskService.getTasksFromLocalStorage();
       dispatch({ type: 'SET_TASKS', payload: localTasks });
     }
   };
 
   const addTask = async (taskData) => {
     try {
+      const newTask = await taskService.createTask(taskData);
       dispatch({ type: 'ADD_TASK', payload: newTask });
     } catch (error) {
       // Fallback to localStorage
+      const newTask = taskService.createTaskInLocalStorage(taskData);
       dispatch({ type: 'ADD_TASK', payload: newTask });
     }
   };
 
   const updateTask = async (id, updates) => {
     try {
+      const updatedTask = await taskService.updateTask(id, updates);
       dispatch({ type: 'UPDATE_TASK', payload: updatedTask });
     } catch (error) {
       // Fallback to localStorage
+      const updatedTask = taskService.updateTaskInLocalStorage(id, updates);
       dispatch({ type: 'UPDATE_TASK', payload: updatedTask });
     }
   };
 
   const deleteTask = async (id) => {
     try {
+      await taskService.deleteTask(id);
       dispatch({ type: 'DELETE_TASK', payload: id });
     } catch (error) {
       // Fallback to localStorage
+      taskService.deleteTaskFromLocalStorage(id);
       dispatch({ type: 'DELETE_TASK', payload: id });
     }
   };

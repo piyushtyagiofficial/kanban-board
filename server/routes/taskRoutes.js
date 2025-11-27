@@ -16,7 +16,7 @@ router.get('/', getTasks);
 router.post('/', validateTask, createTask);
 
 // PUT /api/tasks/:id - Update a task
-router.put('/:id', validateTask, updateTask);
+router.put('/:id', updateTask);
 
 // DELETE /api/tasks/:id - Delete a task
 router.delete('/:id', deleteTask);

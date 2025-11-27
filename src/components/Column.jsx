@@ -1,16 +1,25 @@
-import React from 'react';
+import React, { useState } from 'react';
 import TaskCard from './TaskCard';
 import { useTask } from '../context/TaskContext';
 
 const Column = ({ column, tasks, onEditTask }) => {
   const { moveTask } = useTask();
+  const [isDragOver, setIsDragOver] = useState(false);
 
   const handleDragOver = (e) => {
     e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    setIsDragOver(true);
+  };
+
+  const handleDragLeave = (e) => {
+    e.preventDefault();
+    setIsDragOver(false);
   };
 
   const handleDrop = (e) => {
     e.preventDefault();
+    setIsDragOver(false);
     const taskId = e.dataTransfer.getData('taskId');
     const sourceStatus = e.dataTransfer.getData('sourceStatus');
     
@@ -29,13 +38,16 @@ const Column = ({ column, tasks, onEditTask }) => {
       </div>
       
       <div
-        className={`min-h-96 space-y-3 p-4 rounded-lg border-2 border-dashed ${column.color} transition-colors duration-200`}
+        className={`min-h-96 space-y-3 p-4 rounded-lg border-2 border-dashed ${column.color} transition-colors duration-200 ${
+          isDragOver ? 'border-blue-400 bg-blue-50' : ''
+        }`}
         onDragOver={handleDragOver}
+        onDragLeave={handleDragLeave}
         onDrop={handleDrop}
       >
         {tasks.map(task => (
           <TaskCard
-            key={task.id}
+            key={task.id || task._id}
             task={task}
             onEdit={() => onEditTask(task)}
           />

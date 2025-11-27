@@ -1,5 +1,6 @@
 import Task from '../models/Task.js';
 import { asyncHandler } from '../middleware/asyncHandler.js';
+import mongoose from 'mongoose';
 
 // @desc    Get all tasks
 // @route   GET /api/tasks
@@ -37,7 +38,12 @@ export const createTask = asyncHandler(async (req, res) => {
 // @access  Public
 export const updateTask = asyncHandler(async (req, res) => {
   const { id } = req.params;
-  const { title, description, status } = req.body;
+  
+  // Validate ObjectId format
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    res.status(400);
+    throw new Error('Invalid task ID format');
+  }
 
   const task = await Task.findById(id);
 
@@ -46,9 +52,15 @@ export const updateTask = asyncHandler(async (req, res) => {
     throw new Error('Task not found');
   }
 
+  // Only update provided fields
+  const updateFields = {};
+  if (req.body.title !== undefined) updateFields.title = req.body.title;
+  if (req.body.description !== undefined) updateFields.description = req.body.description;
+  if (req.body.status !== undefined) updateFields.status = req.body.status;
+
   const updatedTask = await Task.findByIdAndUpdate(
     id,
-    { title, description, status },
+    updateFields,
     { new: true, runValidators: true }
   );
 
@@ -60,6 +72,12 @@ export const updateTask = asyncHandler(async (req, res) => {
 // @access  Public
 export const deleteTask = asyncHandler(async (req, res) => {
   const { id } = req.params;
+
+  // Validate ObjectId format
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    res.status(400);
+    throw new Error('Invalid task ID format');
+  }
 
   const task = await Task.findById(id);
 

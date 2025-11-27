@@ -6,14 +6,17 @@ const TaskCard = ({ task, onEdit }) => {
   const { deleteTask } = useTask();
 
   const handleDragStart = (e) => {
-    e.dataTransfer.setData('taskId', task.id);
+    const taskId = (task.id || task._id)?.toString();
+    e.dataTransfer.setData('taskId', taskId);
     e.dataTransfer.setData('sourceStatus', task.status);
+    e.dataTransfer.effectAllowed = 'move';
   };
 
   const handleDelete = (e) => {
     e.stopPropagation();
     if (window.confirm('Are you sure you want to delete this task?')) {
-      deleteTask(task.id);
+      const taskId = (task.id || task._id)?.toString();
+      deleteTask(taskId);
     }
   };
 

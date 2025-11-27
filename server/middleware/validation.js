@@ -2,11 +2,13 @@ export const validateTask = (req, res, next) => {
   const { title, status } = req.body;
   const errors = [];
 
-  // Validate title
-  if (!title || title.trim().length === 0) {
-    errors.push('Title is required');
-  } else if (title.length > 100) {
-    errors.push('Title cannot exceed 100 characters');
+  // Only validate title if it's provided (for updates)
+  if (title !== undefined) {
+    if (!title || title.trim().length === 0) {
+      errors.push('Title is required');
+    } else if (title.length > 100) {
+      errors.push('Title cannot exceed 100 characters');
+    }
   }
 
   // Validate status

@@ -33,7 +33,7 @@ const taskSchema = new mongoose.Schema({
   toJSON: {
     transform: function(doc, ret) {
       ret.id = ret._id;
-      delete ret._id;
+      // Keep both id and _id for compatibility
       delete ret.__v;
       return ret;
     }
@@ -41,10 +41,11 @@ const taskSchema = new mongoose.Schema({
 });
 
 // Update the updatedAt field before saving
-taskSchema.pre('save', function () {
-  if (!this.isNew && this.isModified()) {
+taskSchema.pre('save', function(next) {
+  if (this.isModified() && !this.isNew) {
     this.updatedAt = new Date();
   }
+  next();
 });
 
 // Indexes for better query performance

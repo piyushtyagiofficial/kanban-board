@@ -30,7 +30,8 @@ const TaskModal = ({ task, onClose }) => {
 
     try {
       if (task) {
-        await updateTask(task.id, formData);
+        const taskId = (task.id || task._id)?.toString();
+        await updateTask(taskId, formData);
       } else {
         await addTask(formData);
       }

@@ -12,14 +12,20 @@ const taskReducer = (state, action) => {
     case 'UPDATE_TASK':
       return {
         ...state,
-        tasks: state.tasks.map(task =>
-          task.id === action.payload.id ? action.payload : task
-        )
-      };
+        tasks: state.tasks.map(task => {
+          const taskId = (task.id || task._id)?.toString();
+          const payloadId = (action.payload.id || action.payload._id)?.toString();
+          return taskId === payloadId ? action.payload : task;
+        })
+      }
     case 'DELETE_TASK':
       return {
         ...state,
-        tasks: state.tasks.filter(task => task.id !== action.payload)
+        tasks: state.tasks.filter(task => {
+          const taskId = (task.id || task._id)?.toString();
+          const deleteId = action.payload?.toString();
+          return taskId !== deleteId;
+        })
       };
     case 'SET_LOADING':
       return { ...state, loading: action.payload };
@@ -72,9 +78,16 @@ export const TaskProvider = ({ children }) => {
       const updatedTask = await taskService.updateTask(id, updates);
       dispatch({ type: 'UPDATE_TASK', payload: updatedTask });
     } catch (error) {
+      console.error('API update failed, trying localStorage:', error);
       // Fallback to localStorage
-      const updatedTask = taskService.updateTaskInLocalStorage(id, updates);
-      dispatch({ type: 'UPDATE_TASK', payload: updatedTask });
+      try {
+        const updatedTask = taskService.updateTaskInLocalStorage(id, updates);
+        dispatch({ type: 'UPDATE_TASK', payload: updatedTask });
+      } catch (localError) {
+        console.error('LocalStorage update also failed:', localError);
+        // Reload tasks to ensure consistency
+        loadTasks();
+      }
     }
   };
 
@@ -83,14 +96,41 @@ export const TaskProvider = ({ children }) => {
       await taskService.deleteTask(id);
       dispatch({ type: 'DELETE_TASK', payload: id });
     } catch (error) {
+      console.error('API delete failed, trying localStorage:', error);
       // Fallback to localStorage
-      taskService.deleteTaskFromLocalStorage(id);
-      dispatch({ type: 'DELETE_TASK', payload: id });
+      try {
+        taskService.deleteTaskFromLocalStorage(id);
+        dispatch({ type: 'DELETE_TASK', payload: id });
+      } catch (localError) {
+        console.error('LocalStorage delete also failed:', localError);
+        // Reload tasks to ensure consistency
+        loadTasks();
+      }
     }
   };
 
   const moveTask = async (id, newStatus) => {
-    await updateTask(id, { status: newStatus });
+    try {
+      // Find the current task to preserve other fields
+      const currentTask = state.tasks.find(task => {
+        const taskId = (task.id || task._id)?.toString();
+        return taskId === id?.toString();
+      });
+      
+      if (currentTask) {
+        await updateTask(id, { 
+          title: currentTask.title,
+          description: currentTask.description,
+          status: newStatus 
+        });
+      } else {
+        throw new Error('Task not found for move operation');
+      }
+    } catch (error) {
+      console.error('Error moving task:', error);
+      // Reload tasks to ensure consistency
+      loadTasks();
+    }
   };
 
   return (

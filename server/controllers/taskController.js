@@ -39,10 +39,10 @@ export const createTask = asyncHandler(async (req, res) => {
 export const updateTask = asyncHandler(async (req, res) => {
   const { id } = req.params;
   
-  // Validate ObjectId format
+  // Validate ObjectId format - if invalid, return 404 (task doesn't exist in DB)
   if (!mongoose.Types.ObjectId.isValid(id)) {
-    res.status(400);
-    throw new Error('Invalid task ID format');
+    res.status(404);
+    throw new Error('Task not found');
   }
 
   const task = await Task.findById(id);
@@ -73,10 +73,10 @@ export const updateTask = asyncHandler(async (req, res) => {
 export const deleteTask = asyncHandler(async (req, res) => {
   const { id } = req.params;
 
-  // Validate ObjectId format
+  // Validate ObjectId format - if invalid, return 404 (task doesn't exist in DB)
   if (!mongoose.Types.ObjectId.isValid(id)) {
-    res.status(400);
-    throw new Error('Invalid task ID format');
+    res.status(404);
+    throw new Error('Task not found');
   }
 
   const task = await Task.findById(id);

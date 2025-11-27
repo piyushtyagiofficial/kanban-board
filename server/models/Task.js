@@ -41,11 +41,10 @@ const taskSchema = new mongoose.Schema({
 });
 
 // Update the updatedAt field before saving
-taskSchema.pre('save', function(next) {
+taskSchema.pre('save', async function() {
   if (this.isModified() && !this.isNew) {
     this.updatedAt = new Date();
   }
-  next();
 });
 
 // Indexes for better query performance

@@ -1,7 +1,12 @@
-export default function App() {
+import React, { useState, useEffect } from 'react';
+import Header from './components/Header';
+
+function App() {
   return (
-    <h1 className="text-3xl font-bold underline">
-      Hello world!
-    </h1>
-  )
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
+        <Header />
+      </div>
+  );
 }
+
+export default App;

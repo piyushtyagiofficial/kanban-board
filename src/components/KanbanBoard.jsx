@@ -38,19 +38,24 @@ const KanbanBoard = () => {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <h2 className="text-3xl font-bold text-gray-800">Project Board</h2>
+    <div className="space-y-6 sm:space-y-8">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 sm:gap-0">
+        <div>
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900">
+            Project Board
+          </h2>
+          <p className="text-sm sm:text-base text-gray-600 mt-1">Manage your tasks efficiently</p>
+        </div>
         <button
           onClick={handleAddTask}
-          className="flex items-center space-x-2 bg-gradient-to-r from-blue-500 to-purple-600 text-white px-6 py-3 rounded-lg hover:from-blue-600 hover:to-purple-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+          className="flex items-center justify-center space-x-2 bg-blue-600 hover:bg-blue-700 text-white px-5 sm:px-6 py-3 sm:py-3.5 rounded-xl transition-all duration-300 shadow-premium hover:shadow-hover transform hover:-translate-y-0.5 active:translate-y-0 w-full sm:w-auto"
         >
           <Plus className="h-5 w-5" />
-          <span>Add Task</span>
+          <span className="font-semibold">Add Task</span>
         </button>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-5 lg:gap-6">
         {COLUMNS.map(column => (
           <Column
             key={column.id}

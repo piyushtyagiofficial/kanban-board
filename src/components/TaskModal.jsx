@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { X } from 'lucide-react';
+import { X, Edit as EditIcon } from 'lucide-react';
 import { useTask } from '../context/TaskContext';
 
 const TaskModal = ({ task, onClose }) => {
@@ -50,10 +50,10 @@ const TaskModal = ({ task, onClose }) => {
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-xl shadow-xl w-full max-w-md">
-        <div className="flex items-center justify-between p-6 border-b border-gray-200">
-          <h2 className="text-xl font-semibold text-gray-800">
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md sm:max-w-lg">
+        <div className="flex items-center justify-between p-6 border-b">
+          <h2 className="text-2xl font-bold text-gray-900">
             {task ? 'Edit Task' : 'Create New Task'}
           </h2>
           <button
@@ -64,10 +64,10 @@ const TaskModal = ({ task, onClose }) => {
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-6 space-y-4">
+        <form onSubmit={handleSubmit} className="p-6 space-y-5">
           <div>
-            <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-2">
-              Title *
+            <label htmlFor="title" className="block text-sm font-medium text-gray-900 mb-2">
+              Title <span className="text-red-500">*</span>
             </label>
             <input
               type="text"
@@ -75,14 +75,14 @@ const TaskModal = ({ task, onClose }) => {
               name="title"
               value={formData.title}
               onChange={handleChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
               placeholder="Enter task title..."
               required
             />
           </div>
 
           <div>
-            <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-2">
+            <label htmlFor="description" className="block text-sm font-medium text-gray-900 mb-2">
               Description
             </label>
             <textarea
@@ -91,13 +91,13 @@ const TaskModal = ({ task, onClose }) => {
               value={formData.description}
               onChange={handleChange}
               rows={4}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all resize-none"
               placeholder="Enter task description..."
             />
           </div>
 
           <div>
-            <label htmlFor="status" className="block text-sm font-medium text-gray-700 mb-2">
+            <label htmlFor="status" className="block text-sm font-medium text-gray-900 mb-2">
               Status
             </label>
             <select
@@ -105,7 +105,7 @@ const TaskModal = ({ task, onClose }) => {
               name="status"
               value={formData.status}
               onChange={handleChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all cursor-pointer"
             >
               <option value="todo">To Do</option>
               <option value="in-progress">In Progress</option>
@@ -113,19 +113,28 @@ const TaskModal = ({ task, onClose }) => {
             </select>
           </div>
 
-          <div className="flex space-x-3 pt-4">
+          <div className="flex flex-col sm:flex-row gap-3 pt-4">
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+              className="flex-1 px-4 py-3 text-gray-700 font-medium border border-gray-300 hover:bg-gray-50 rounded-lg transition-all order-2 sm:order-1"
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="flex-1 px-4 py-2 text-white bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 rounded-lg transition-all duration-200"
+              className="flex-1 px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-all order-1 sm:order-2 flex items-center justify-center gap-2"
             >
-              {task ? 'Update' : 'Create'} Task
+              {task ? (
+                <>
+                  <EditIcon className="h-4 w-4" />
+                  Update Task
+                </>
+              ) : (
+                <>
+                  Create Task
+                </>
+              )}
             </button>
           </div>
         </form>

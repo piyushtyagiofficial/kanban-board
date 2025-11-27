@@ -1,4 +1,7 @@
 import React, { useState } from 'react';
+import Column from './Column';
+import TaskModal from './TaskModal';
+import { useTask } from '../context/TaskContext';
 import { Plus } from 'lucide-react';
 
 const COLUMNS = [
@@ -8,6 +11,7 @@ const COLUMNS = [
 ];
 
 const KanbanBoard = () => {
+  const { tasks, loading } = useTask();
   const [showModal, setShowModal] = useState(false);
   const [editingTask, setEditingTask] = useState(null);
 
@@ -25,6 +29,13 @@ const KanbanBoard = () => {
     return tasks.filter(task => task.status === status);
   };
 
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-64">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -38,8 +49,27 @@ const KanbanBoard = () => {
           <span>Add Task</span>
         </button>
       </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {COLUMNS.map(column => (
+          <Column
+            key={column.id}
+            column={column}
+            tasks={getTasksByStatus(column.id)}
+            onEditTask={handleEditTask}
+          />
+        ))}
+      </div>
+
+      {showModal && (
+        <TaskModal
+          task={editingTask}
+          onClose={() => setShowModal(false)}
+        />
+      )}
     </div>
   );
 };
 
 export default KanbanBoard;
+

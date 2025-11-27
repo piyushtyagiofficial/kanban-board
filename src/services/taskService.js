@@ -61,12 +61,24 @@ export const deleteTaskFromLocalStorage = (id) => {
 export const getTasks = async () => {
   try {
     const response = await api.get('/tasks');
-    return response.data;
+
+    // If backend returns { tasks: [...] }
+    if (Array.isArray(response.data)) {
+      return response.data;
+    }
+
+    if (Array.isArray(response.data.tasks)) {
+      return response.data.tasks;
+    }
+
+    console.error("Unexpected API response:", response.data);
+    return [];
   } catch (error) {
     console.error('API Error:', error);
     throw new Error('Failed to fetch tasks from server');
   }
 };
+
 
 export const createTask = async (taskData) => {
   try {

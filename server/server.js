@@ -4,6 +4,8 @@ import helmet from 'helmet';
 import morgan from 'morgan';
 import dotenv from 'dotenv';
 import connectDB from './config/database.js';
+import taskRoutes from './routes/taskRoutes.js';
+import { errorHandler } from './middleware/errorHandler.js';
 
 dotenv.config();
 
@@ -16,7 +18,7 @@ connectDB();
 // Middleware
 app.use(helmet());
 app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+  origin: process.env.FRONTEND_URL || 'http://localhost:5173',
   credentials: true
 }));
 app.use(morgan('combined'));
@@ -31,6 +33,20 @@ app.get('/health', (req, res) => {
     timestamp: new Date().toISOString()
   });
 });
+
+// API Routes
+app.use('/api/tasks', taskRoutes);
+
+// 404 handler
+app.use((req, res) => {
+  res.status(404).json({
+    success: false,
+    message: 'Route not found'
+  });
+});
+
+// Error handling middleware
+app.use(errorHandler);
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
